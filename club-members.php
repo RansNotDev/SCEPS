@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_members'])) {
                                                                 <?php if (!empty($member['image'])): ?>
                                                                     <img src="data:image/jpeg;base64,<?php echo base64_encode($member['image']); ?>" alt="Profile Image" width="75" height="75" class="img-circle">
                                                                 <?php else: ?>
-                                                                    <img src="admin/AdminLTE/dist/img/default.jpg" alt="Default Image" width="75" height="75" class="img-circle">
+                                                                    <img src="admin/dist/img/default.jpg" alt="Default Image" width="75" height="75" class="img-circle">
                                                                 <?php endif; ?>
                                                             </div>
                                                         </td>
@@ -265,7 +265,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_members'])) {
                         <div class="form-group text-center">
                             <label>Profile Image</label><br>
                             <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
-                                <img id="imagePreview" src="admin/AdminLTE/dist/img/default.jpg" alt="Image Preview"
+                                <img id="imagePreview" src="admin/dist/img/default.jpg" alt="Image Preview"
                                     style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; cursor: pointer;"
                                     onclick="document.getElementById('image').click();">
                                 <input type="file" id="image" name="image" accept="image/*" style="display: none;" onchange="previewImage(event)">

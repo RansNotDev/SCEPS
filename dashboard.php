@@ -118,7 +118,7 @@ $total_clubs = fetch_data("SELECT COUNT(*) as count FROM clubs")[0]['count'];
                     <div class="container-fluid">
                         <div class="row">
                             <!-- Recent Activities Card -->
-                            <div class="col-lg-4 col-12">
+                            <div class="col-lg-6 col-12">
                                 <div class="card">
                                     <div class="card-header">
                                         <h3 class="card-title">Recent Activities</h3>
@@ -131,6 +131,8 @@ $total_clubs = fetch_data("SELECT COUNT(*) as count FROM clubs")[0]['count'];
                                         </ul>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-lg-6 col-12">
                                 <div class="card">
                                     <div class="card-header">
                                         <h3 class="card-title">Upcoming Events</h3>

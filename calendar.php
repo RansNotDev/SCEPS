@@ -365,7 +365,7 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
                 var location = $('#eventLocation').val();
 
                 var eventData = {
-                    action: id ? 'update' : 'add',
+                    action: 'update',
                     id: id,
                     name: title,
                     description: description,
@@ -475,7 +475,7 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
                 error: function() {
                     alert('Failed to fetch events');
                 }
-            }); //tite
+            });
 
             // Initialize external events
             function ini_events(ele) {

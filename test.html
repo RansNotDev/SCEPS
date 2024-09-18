@@ -1,11 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Draggable Shapes with Collision Detection</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        overflow: hidden; /* Prevent scrollbars during dragging */
+      }
+      .shape {
+        position: absolute;
+        border: 2px solid black;
+        cursor: grab; /* Show a grab cursor when hovering over the shape */
+      }
+      .rectangle {
+        width: 150px;
+        height: 100px;
+        background-color: lightblue;
+        top: 50px;
+        left: 50px;
+      }
+      .circle {
+        width: 100px;
+        height: 100px;
+        background-color: lightcoral;
+        border-radius: 50%;
+        top: 200px;
+        left: 250px;
+      }
+      .info {
+        margin-top: 20px;
+      }
+      .shape:active {
+        cursor: grabbing; /* Show a grabbing cursor while dragging */
+      }
+      #collision-info {
+        margin-top: 20px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="rectangle" class="shape rectangle"></div>
+    <div id="circle" class="shape circle"></div>
+
+    <div class="info">
+      <h2>Shape Positions</h2>
+      <div id="rectangle-info"></div>
+      <div id="circle-info"></div>
+      <div id="collision-info"></div>
+    </div>
+
+    <script>
+      function makeDraggable(element) {
+        let offsetX,
+          offsetY,
+          isDragging = false;
+
+        element.addEventListener("mousedown", (e) => {
+          offsetX = e.clientX - element.getBoundingClientRect().left;
+          offsetY = e.clientY - element.getBoundingClientRect().top;
+          isDragging = true;
+          element.style.zIndex = 1000; // Bring the dragged element to the front
+        });
+
+        document.addEventListener("mousemove", (e) => {
+          if (isDragging) {
+            let x = e.clientX - offsetX;
+            let y = e.clientY - offsetY;
+            element.style.left = `${x}px`;
+            element.style.top = `${y}px`;
+
+            updateInfo(); // Update position info in real-time
+
+            if (element.id === "circle") {
+              checkCollision();
+            }
+          }
+        });
+
+        document.addEventListener("mouseup", () => {
+          isDragging = false;
+          element.style.zIndex = ""; // Reset z-index
+        });
+      }
+
+      function checkCollision() {
+        var circle = document.getElementById("circle");
+        var rectangle = document.getElementById("rectangle");
+
+        var circleRect = circle.getBoundingClientRect();
+        var rectangleRect = rectangle.getBoundingClientRect();
+
+        // Check if circle is within the rectangle bounds
+        var collision =
+          circleRect.left < rectangleRect.right &&
+          circleRect.right > rectangleRect.left &&
+          circleRect.top < rectangleRect.bottom &&
+          circleRect.bottom > rectangleRect.top;
+
+        var collisionInfo = collision
+          ? "Circle is inside the rectangle!"
+          : "Circle is not inside the rectangle.";
+        document.getElementById("collision-info").innerText = collisionInfo;
+      }
+
+      function updateInfo() {
+        var rectangle = document.getElementById("rectangle");
+        var circle = document.getElementById("circle");
+
+        var rectangleRect = rectangle.getBoundingClientRect();
+        var circleRect = circle.getBoundingClientRect();
+
+        var rectangleInfo = `
+                <h3>Rectangle</h3>
+                <p><strong>Left:</strong> ${rectangleRect.left}px</p>
+                <p><strong>Top:</strong> ${rectangleRect.top}px</p>
+                <p><strong>Width:</strong> ${rectangleRect.width}px</p>
+                <p><strong>Height:</strong> ${rectangleRect.height}px</p>
+            `;
+        document.getElementById("rectangle-info").innerHTML = rectangleInfo;
+
+        var circleInfo = `
+                <h3>Circle</h3>
+                <p><strong>Left:</strong> ${circleRect.left}px</p>
+                <p><strong>Top:</strong> ${circleRect.top}px</p>
+                <p><strong>Width:</strong> ${circleRect.width}px</p>
+                <p><strong>Height:</strong> ${circleRect.height}px</p>
+            `;
+        document.getElementById("circle-info").innerHTML = circleInfo;
+      }
+
+      window.onload = function () {
+        makeDraggable(document.getElementById("rectangle"));
+        makeDraggable(document.getElementById("circle"));
+        updateInfo(); // Update info initially
+      };
+    </script>
+  </body>
 </html>

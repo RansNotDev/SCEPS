@@ -9,7 +9,7 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Get username from session
+// Get username from sessions
 $username = $_SESSION['username'];
 
 // Function to execute queries and return results

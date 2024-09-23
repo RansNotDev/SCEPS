@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 17, 2024 at 12:08 PM
+-- Generation Time: Sep 23, 2024 at 02:37 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -132,18 +132,21 @@ CREATE TABLE `events` (
 --
 
 INSERT INTO `events` (`event_id`, `event_name`, `event_description`, `event_date`, `start_time`, `end_time`, `location`, `club_id`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 'Event 1', 'Description for Event 1', '2024-09-01', '10:00:00', '12:00:00', 'Location 1', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 08:57:28'),
-(2, 'Event 2', 'Description for Event 2', '2024-09-02', '14:00:00', '16:00:00', 'Location 2', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 08:57:29'),
-(3, 'Event 3', 'Description for Event 3', '2024-09-03', '09:00:00', '11:00:00', 'Location 3', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 08:57:31'),
-(4, 'Event 4', 'Description for Event 4', '2024-09-04', '07:00:00', '09:00:00', 'Location 4', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 08:57:32'),
+(1, 'Event 1', 'Description for Event 1', '2024-09-01', '10:00:00', '12:00:00', 'Location 1', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 20:15:22'),
+(2, 'Event 2', 'Description for Event 2', '2024-09-02', '14:00:00', '16:00:00', 'Location 2', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 20:15:23'),
+(3, 'Event 3', 'Description for Event 3', '2024-09-03', '09:00:00', '11:00:00', 'Location 3', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 20:15:18'),
+(4, 'Event 4', 'Description for Event 4', '2024-09-04', '07:00:00', '09:00:00', 'Location 4', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 20:15:20'),
 (5, 'Event 5', 'Description for Event 5', '2024-09-05', '15:00:00', '17:00:00', 'Location 5', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 08:57:33'),
 (6, 'Event 6', 'Description for Event 6', '2024-09-06', '08:00:00', '10:00:00', 'Location 6', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 08:57:34'),
-(7, 'Event 7', 'Description for Event 7', '2024-09-07', '13:00:00', '15:00:00', 'Location 7', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 08:57:35'),
-(8, 'Event 8', 'Description for Event 8', '2024-09-08', '10:30:00', '12:30:00', 'Location 8', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 08:57:47'),
-(9, 'Event 9', 'Description for Event 9', '2024-09-09', '09:45:00', '11:45:00', 'Location 9', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 09:02:15'),
-(10, 'Event 10', 'Description for Event 10', '2024-09-10', '14:15:00', '16:15:00', 'Location 10', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 09:03:04'),
-(11, 'Event 11', 'Description for Event 11', '2024-09-11', '03:00:00', '07:00:00', 'Location 11', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 09:19:00'),
-(14, 'Maga lulu', NULL, '0000-00-00', NULL, NULL, NULL, NULL, NULL, '2024-09-17 03:27:45', '2024-09-17 09:27:45');
+(7, 'Event 7', 'Description for Event 7', '2024-09-07', '00:00:00', '00:00:00', 'Location 7', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 20:08:07'),
+(8, 'Event 8', 'Description for Event 8', '2024-09-08', '10:30:00', '12:30:00', 'Location 8', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 20:15:35'),
+(9, 'Event 9', 'Description for Event 9', '2024-09-09', '09:45:00', '11:45:00', 'Location 9', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 20:15:28'),
+(10, 'Game', '', '2024-09-10', '08:33:00', '23:59:00', 'Location 10', NULL, 0, '2024-09-08 16:55:35', '2024-09-17 20:34:20'),
+(14, 'Maga lulu', NULL, '0000-00-00', NULL, NULL, NULL, NULL, NULL, '2024-09-17 03:27:45', '2024-09-17 09:27:45'),
+(15, 'HAHAHAHH', NULL, '0000-00-00', NULL, NULL, NULL, NULL, NULL, '2024-09-17 04:28:18', '2024-09-17 10:28:18'),
+(16, 'magjabs', NULL, '0000-00-00', NULL, NULL, NULL, NULL, NULL, '2024-09-17 04:35:20', '2024-09-17 10:35:20'),
+(17, 'maga lulu', NULL, '0000-00-00', NULL, NULL, NULL, NULL, NULL, '2024-09-17 14:19:25', '2024-09-17 20:19:25'),
+(20, 'test123', '', '2024-09-11', '00:00:00', '23:59:00', '', NULL, NULL, '2024-09-17 20:42:35', '2024-09-23 00:30:20');
 
 -- --------------------------------------------------------
 
@@ -228,7 +231,7 @@ ALTER TABLE `club_members`
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
-  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `posts`

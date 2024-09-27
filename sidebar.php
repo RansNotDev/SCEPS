@@ -161,12 +161,7 @@
             <p>Profile</p>
           </a>
         </li>
-        <li class="nav-item">
-          <a href="events.php" class="nav-link">
-            <i class="nav-icon fas fa-calendar-alt"></i>
-            <p>Manage Events</p>
-          </a>
-        </li>
+        
         <!-- club dropdown -->
         <li class="nav-item">
           <a href="#" class="nav-link">

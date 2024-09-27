@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -83,6 +84,7 @@
 
 </html>
 
+
 <?php
 include '../connections/db.php';
 session_start();
@@ -106,17 +108,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['username'] = $username;
             $_SESSION['role'] = $role;
 
+            // Close the statement before redirection or alert
+            $stmt->close();
+
             // Redirect based on the user's role
             if ($role === 'Member') {
                 header("Location: member_dashboard.php");
+                exit(); // Stop further execution
             } else {
-                echo "<p style='color:red;'>Unknown role.</p>";
+                echo "<script type='text/javascript'>alert('Invalid Credentials.');</script>";
+                exit(); // Stop further execution after showing the alert
             }
-            exit();
         } else {
-            echo "<p style='color:red;'>Invalid password.</p>";
+            echo "<script type='text/javascript'>alert('Invalid Credentials.');</script>";
+            $stmt->close(); // Close the statement before exit
+            exit(); // Stop further execution after showing the alert
         }
+    } else {
+        echo "<script type='text/javascript'>alert('Invalid Credentials.');</script>";
+        $stmt->close(); // Close the statement before exit
+        exit(); // Stop further execution after showing the alert
     }
-    $stmt->close();
 }
 ?>

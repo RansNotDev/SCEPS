@@ -135,9 +135,13 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" id="deleteEventBtn">Delete Event</button>
-                        <button type="button" class="btn btn-primary" id="saveEventBtn">Save changes</button>
+                    <?php if ($_SESSION['role'] == 'admin') : ?>
+                    <!-- Show Save and Delete buttons only for admin -->
+                    <button type="button" class="btn btn-danger" id="deleteEventBtn">Delete Event</button>
+                    <button type="button" class="btn btn-primary" id="saveEventBtn">Save changes</button>
+                    <?php endif; ?>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -157,166 +161,64 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
 
     <script>
         $(function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        themeSystem: 'bootstrap',
+        editable: false, // Prevent users from dragging or resizing events
+        droppable: false, // Prevent external events from being dropped
+        events: function(fetchInfo, successCallback, failureCallback) {
+            $.ajax({
+                url: 'add-events.php',
+                type: 'POST',
+                data: {
+                    action: 'fetch-calendar'
                 },
-                themeSystem: 'bootstrap',
-                editable: true,
-                droppable: true,
-                events: function(fetchInfo, successCallback, failureCallback) {
-                    $.ajax({
-                        url: 'add-events.php',
-                        type: 'POST',
-                        data: {
-                            action: 'fetch-calendar'
-                        },
-                        dataType: 'json',
-                        success: function(data) {
-                            var events = data.map(function(event) {
-                                return {
-                                    id: event.event_id,
-                                    title: event.event_name,
-                                    start: event.event_date + 'T' + (event.start_time || '00:00'),
-                                    end: event.event_date + 'T' + (event.end_time || '23:59'),
-                                    description: event.event_description,
-                                    location: event.location
-                                };
-                            });
-                            successCallback(events);
-                        },
-                        error: function() {
-                            failureCallback('Failed to fetch events');
-                        }
+                dataType: 'json',
+                success: function(data) {
+                    var events = data.map(function(event) {
+                        return {
+                            id: event.event_id,
+                            title: event.event_name,
+                            start: event.event_date + 'T' + (event.start_time || '00:00'),
+                            end: event.event_date + 'T' + (event.end_time || '23:59'),
+                            description: event.event_description,
+                            location: event.location
+                        };
                     });
+                    successCallback(events);
                 },
-                eventClick: function(info) {
-                    $('#eventId').val(info.event.id);
-                    $('#eventTitle').val(info.event.title);
-                    $('#eventDescription').val(info.event.extendedProps.description);
-                    $('#eventDate').val(info.event.startStr.split('T')[0]);
-                    $('#startTime').val(info.event.startStr.split('T')[1] || '00:00');
-                    $('#endTime').val(info.event.endStr.split('T')[1] || '23:59');
-                    $('#eventLocation').val(info.event.extendedProps.location);
-                    $('#eventModal').modal('show');
-                },
-                dateClick: function(info) {
-                    $('#eventId').val('');
-                    $('#eventTitle').val('');
-                    $('#eventDescription').val('');
-                    $('#eventDate').val(info.dateStr);
-                    $('#startTime').val('00:00');
-                    $('#endTime').val('23:59');
-                    $('#eventLocation').val('');
-                    $('#eventModal').modal('show');
-                },
-                eventDrop: function(info) {
-                    $.ajax({
-                        url: 'add-events.php',
-                        type: 'POST',
-                        data: {
-                            action: 'update',
-                            id: info.event.id,
-                            name: info.event.title,
-                            description: info.event.extendedProps.description,
-                            date: info.event.startStr.split('T')[0],
-                            start_time: info.event.startStr.split('T')[1] || null,
-                            end_time: info.event.endStr.split('T')[1] || null,
-                            location: info.event.extendedProps.location
-                        },
-                        success: function() {
-                            console.log('Event updated');
-                        }
-                    });
+                error: function() {
+                    failureCallback('Failed to fetch events');
                 }
             });
+        },
+        eventClick: function(info) {
+            $('#eventId').val(info.event.id);
+            $('#eventTitle').val(info.event.title);
+            $('#eventDescription').val(info.event.extendedProps.description);
+            $('#eventDate').val(info.event.startStr.split('T')[0]);
+            $('#startTime').val(info.event.startStr.split('T')[1] || '00:00');
+            $('#endTime').val(info.event.endStr.split('T')[1] || '23:59');
+            $('#eventLocation').val(info.event.extendedProps.location);
+            $('#eventModal').modal('show');
+        },
+        dateClick: function(info) {
+            // Disable creating events via dateClick for users
+            alert('You do not have permission to create events.');
+        },
+    });
 
-            calendar.render();
+    calendar.render();
 
-            // Save Event Button
-            $('#saveEventBtn').click(function() {
-                var id = $('#eventId').val();
-                var title = $('#eventTitle').val().trim();
-                var description = $('#eventDescription').val().trim();
-                var date = $('#eventDate').val();
-                var startTime = $('#startTime').val().trim();
-                var endTime = $('#endTime').val().trim();
-                var location = $('#eventLocation').val().trim();
+    // Disable Save/Delete buttons for users
+    $('#saveEventBtn, #deleteEventBtn').hide();
+});
 
-                // Client-side validation
-                if (!title) {
-                    alert('Event title is required.');
-                    return;
-                }
-                if (!date) {
-                    alert('Event date is required.');
-                    return;
-                }
-                if (!startTime) {
-                    alert('Start time is required.');
-                    return;
-                }
-                if (!endTime) {
-                    alert('End time is required.');
-                    return;
-                }
-
-                $.ajax({
-                    url: 'add-events.php',
-                    type: 'POST',
-                    data: {
-                        action: 'update',
-                        id: id,
-                        name: title,
-                        description: description,
-                        date: date,
-                        start_time: startTime,
-                        end_time: endTime,
-                        location: location
-                    },
-                    success: function(response) {
-                        $('#eventModal').modal('hide');
-                        calendar.refetchEvents();
-                    },
-                    error: function() {
-                        alert('Failed to save event');
-                    }
-                });
-            });
-
-            // Delete Event Button
-            $('#deleteEventBtn').click(function() {
-                var id = $('#eventId').val();
-                if (id) {
-                    if (confirm('Are you sure you want to delete this event?')) {
-                        $.ajax({
-                            url: 'add-events.php',
-                            type: 'POST',
-                            data: {
-                                action: 'delete',
-                                id: id
-                            },
-                            success: function(response) {
-                                if (response.trim() === 'Event deleted successfully') {
-                                    $('#eventModal').modal('hide');
-                                    calendar.refetchEvents();
-                                } else {
-                                    alert('Failed to delete event');
-                                }
-                            },
-                            error: function() {
-                                alert('Failed to connect to the server');
-                            }
-                        });
-                    }
-                } else {
-                    alert('No event selected for deletion.');
-                }
-            });
-        });
     </script>
 </body>
 

@@ -64,9 +64,6 @@
         <p class="mb-1">
           <a href="forgot-password.php">I forgot my password</a>
         </p>
-        <p class="mb-0">
-          <a href="register.php" class="text-center">Register a new membership</a>
-        </p>
       </div>
       <!-- /.login-card-body -->
     </div>
@@ -88,31 +85,44 @@ include './connections/db.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $username = $_POST['username'];
-  $password = $_POST['password'];
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-  // Fetch user from the database
-  $stmt = $conn->prepare("SELECT password FROM club_members WHERE username = ?");
-  $stmt->bind_param("s", $username);
-  $stmt->execute();
-  $stmt->store_result();
+    // Fetch the password and role from the database
+    $stmt = $conn->prepare("SELECT password, role FROM club_members WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $stmt->store_result();
 
-  if ($stmt->num_rows > 0) {
-    $stmt->bind_result($stored_hashed_password);
-    $stmt->fetch();
+    if ($stmt->num_rows > 0) {
+        $stmt->bind_result($stored_hashed_password, $role);
+        $stmt->fetch();
 
-    // Verify the password
-    if (password_verify($password, $stored_hashed_password)) {
-      $_SESSION['username'] = $username;
-      header("Location: dashboard.php");
-      exit();
+        // Verify the password
+        if (password_verify($password, $stored_hashed_password)) {
+            $_SESSION['username'] = $username;
+            $_SESSION['role'] = $role;
+
+            // Close the statement before redirection or alert
+            $stmt->close();
+
+            // Redirect based on the user's role
+            if ($role === 'Admin') {
+                header("Location: dashboard.php");
+                exit(); // Stop further execution
+            } else {
+                echo "<script type='text/javascript'>alert('Invalid Credentials.');</script>";
+                exit(); // Stop further execution after showing the alert
+            }
+        } else {
+            echo "<script type='text/javascript'>alert('Invalid Credentials.');</script>";
+            $stmt->close(); // Close the statement before exit
+            exit(); // Stop further execution after showing the alert
+        }
     } else {
-      echo "<p style='color:red;'>Invalid password.</p>";
+        echo "<script type='text/javascript'>alert('Invalid Credentials.');</script>";
+        $stmt->close(); // Close the statement before exit
+        exit(); // Stop further execution after showing the alert
     }
-  } else {
-    echo "<p style='color:red;'>No user found with that username.</p>";
-  }
-
-  $stmt->close();
 }
 ?>

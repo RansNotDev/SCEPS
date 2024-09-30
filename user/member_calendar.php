@@ -135,11 +135,11 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
                         </form>
                     </div>
                     <div class="modal-footer">
-                    <?php if ($_SESSION['role'] == 'admin') : ?>
-                    <!-- Show Save and Delete buttons only for admin -->
-                    <button type="button" class="btn btn-danger" id="deleteEventBtn">Delete Event</button>
-                    <button type="button" class="btn btn-primary" id="saveEventBtn">Save changes</button>
-                    <?php endif; ?>
+                        <?php if ($_SESSION['role'] == 'admin') : ?>
+                            <!-- Show Save and Delete buttons only for admin -->
+                            <button type="button" class="btn btn-danger" id="deleteEventBtn">Delete Event</button>
+                            <button type="button" class="btn btn-primary" id="saveEventBtn">Save changes</button>
+                        <?php endif; ?>
                     </div>
 
                 </div>
@@ -161,64 +161,63 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
 
     <script>
         $(function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        themeSystem: 'bootstrap',
-        editable: false, // Prevent users from dragging or resizing events
-        droppable: false, // Prevent external events from being dropped
-        events: function(fetchInfo, successCallback, failureCallback) {
-            $.ajax({
-                url: 'add-events.php',
-                type: 'POST',
-                data: {
-                    action: 'fetch-calendar'
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                dataType: 'json',
-                success: function(data) {
-                    var events = data.map(function(event) {
-                        return {
-                            id: event.event_id,
-                            title: event.event_name,
-                            start: event.event_date + 'T' + (event.start_time || '00:00'),
-                            end: event.event_date + 'T' + (event.end_time || '23:59'),
-                            description: event.event_description,
-                            location: event.location
-                        };
+                themeSystem: 'bootstrap',
+                editable: false, // Prevent users from dragging or resizing events
+                droppable: false, // Prevent external events from being dropped
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    $.ajax({
+                        url: '../add-events.php',
+                        type: 'POST',
+                        data: {
+                            action: 'fetch-calendar'
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            var events = data.map(function(event) {
+                                return {
+                                    id: event.event_id,
+                                    title: event.event_name,
+                                    start: event.event_date + 'T' + (event.start_time || '00:00'),
+                                    end: event.event_date + 'T' + (event.end_time || '23:59'),
+                                    description: event.event_description,
+                                    location: event.location
+                                };
+                            });
+                            successCallback(events);
+                        },
+                        error: function() {
+                            failureCallback('Failed to fetch events');
+                        }
                     });
-                    successCallback(events);
                 },
-                error: function() {
-                    failureCallback('Failed to fetch events');
-                }
+                eventClick: function(info) {
+                    $('#eventId').val(info.event.id);
+                    $('#eventTitle').val(info.event.title);
+                    $('#eventDescription').val(info.event.extendedProps.description);
+                    $('#eventDate').val(info.event.startStr.split('T')[0]);
+                    $('#startTime').val(info.event.startStr.split('T')[1] || '00:00');
+                    $('#endTime').val(info.event.endStr.split('T')[1] || '23:59');
+                    $('#eventLocation').val(info.event.extendedProps.location);
+                    $('#eventModal').modal('show');
+                },
+                dateClick: function(info) {
+                    // Disable creating events via dateClick for users
+                    alert('You do not have permission to create events.');
+                },
             });
-        },
-        eventClick: function(info) {
-            $('#eventId').val(info.event.id);
-            $('#eventTitle').val(info.event.title);
-            $('#eventDescription').val(info.event.extendedProps.description);
-            $('#eventDate').val(info.event.startStr.split('T')[0]);
-            $('#startTime').val(info.event.startStr.split('T')[1] || '00:00');
-            $('#endTime').val(info.event.endStr.split('T')[1] || '23:59');
-            $('#eventLocation').val(info.event.extendedProps.location);
-            $('#eventModal').modal('show');
-        },
-        dateClick: function(info) {
-            // Disable creating events via dateClick for users
-            alert('You do not have permission to create events.');
-        },
-    });
 
-    calendar.render();
+            calendar.render();
 
-    // Disable Save/Delete buttons for users
-    $('#saveEventBtn, #deleteEventBtn').hide();
-});
-
+            // Disable Save/Delete buttons for users
+            $('#saveEventBtn, #deleteEventBtn').hide();
+        });
     </script>
 </body>
 

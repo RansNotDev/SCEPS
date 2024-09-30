@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,11 +10,11 @@
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="./admin/plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="../admin/plugins/fontawesome-free/css/all.min.css">
   <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="./admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <link rel="stylesheet" href="../admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="./admin/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="../admin/dist/css/adminlte.min.css">
 </head>
 
 <body class="hold-transition login-page">
@@ -24,7 +25,7 @@
     <!-- /.login-logo -->
     <div class="card">
       <div class="card-body login-card-body">
-        <p class="login-box-msg">Sign in to start your session</p>
+        <p class="login-box-msg">Sign in as member</p>
 
         <form action="index.php" method="post">
           <div class="input-group mb-3">
@@ -64,6 +65,9 @@
         <p class="mb-1">
           <a href="forgot-password.php">I forgot my password</a>
         </p>
+        <p class="mb-0">
+          <a href="register.php" class="text-center">Register a new membership</a>
+        </p>
       </div>
       <!-- /.login-card-body -->
     </div>
@@ -80,8 +84,9 @@
 
 </html>
 
+
 <?php
-include './connections/db.php';
+include '../connections/db.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -107,8 +112,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->close();
 
             // Redirect based on the user's role
-            if ($role === 'Admin') {
-                header("Location: dashboard.php");
+            if ($role === 'Member') {
+                header("Location: member_dashboard.php");
                 exit(); // Stop further execution
             } else {
                 echo "<script type='text/javascript'>alert('Invalid Credentials.');</script>";

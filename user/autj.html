@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Log in</title>
-
+<!--sceps.systemfundamentals@gmail.com password sceps1234 -->
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
@@ -17,7 +17,40 @@
 </head>
 
 <body class="hold-transition login-page">
-  <div class="login-box">
+
+<?php
+require_once 'vendor/autoload.php';
+
+// init configuration
+$clientID = getenv('GOOGLE_CLIENT_ID');
+$clientSecret = getenv('GOOGLE_CLIENT_SECRET');
+$redirectUri = 'http://localhost/SCEPS/dashboard.php';
+
+//kupal yung add mo tanga
+
+// create Client Request to access Google API
+$client = new Google_Client();
+$client->setClientId($clientID);
+$client->setClientSecret($clientSecret);
+$client->setRedirectUri($redirectUri);
+$client->addScope("email");
+$client->addScope("profile");
+
+// authenticate code from Google OAuth Flow
+if (isset($_GET['code'])) {
+  $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
+  $client->setAccessToken($token['access_token']);
+
+  // get profile info
+  $google_oauth = new Google_Service_Oauth2($client);
+  $google_account_info = $google_oauth->userinfo->get();
+  $email =  $google_account_info->email;
+  $name =  $google_account_info->name;
+
+  // now you can use this profile info to create account in your website and make user logged in.
+} else {
+  ?>
+    <div class="login-box">
     <div class="login-logo">
       <a href="../../index2.html"><b>School Club Event </b>Planner System</a>
     </div>
@@ -25,7 +58,7 @@
     <div class="card">
       <div class="card-body login-card-body">
         <p class="login-box-msg">Sign in to start your session</p>
-
+  
         <form action="index.php" method="post">
           <div class="input-group mb-3">
             <input type="text" class="form-control" name="username" placeholder="Username">
@@ -59,15 +92,28 @@
             <!-- /.col -->
           </div>
         </form>
-        <br><br>
+        
+        <h4 class="login-box-msg">--------------Or-----------------</h4>
+        
+        <a href="<?php echo $client->createAuthUrl(); ?>" class="btn btn-block btn-danger">
+          <i class="fab fa-google-plus mr-6"></i> Sign in using Google+
+        </a>
 
         <p class="mb-1">
           <a href="forgot-password.php">I forgot my password</a>
+        </p>
+        <p class="mb-0">
+          <a href="register.php" class="text-center">Register a new membership</a>
         </p>
       </div>
       <!-- /.login-card-body -->
     </div>
   </div>
+  <?php
+  }
+  ?>
+
+  
   <!-- /.login-box -->
 
   <!-- jQuery -->
@@ -85,44 +131,31 @@ include './connections/db.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+  $username = $_POST['username'];
+  $password = $_POST['password'];
 
-    // Fetch the password and role from the database
-    $stmt = $conn->prepare("SELECT password, role FROM club_members WHERE username = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $stmt->store_result();
+  // Fetch user from the database
+  $stmt = $conn->prepare("SELECT password FROM club_members WHERE username = ?");
+  $stmt->bind_param("s", $username);
+  $stmt->execute();
+  $stmt->store_result();
 
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($stored_hashed_password, $role);
-        $stmt->fetch();
+  if ($stmt->num_rows > 0) {
+    $stmt->bind_result($stored_hashed_password);
+    $stmt->fetch();
 
-        // Verify the password
-        if (password_verify($password, $stored_hashed_password)) {
-            $_SESSION['username'] = $username;
-            $_SESSION['role'] = $role;
-
-            // Close the statement before redirection or alert
-            $stmt->close();
-
-            // Redirect based on the user's role
-            if ($role === 'Admin') {
-                header("Location: dashboard.php");
-                exit(); // Stop further execution
-            } else {
-                echo "<script type='text/javascript'>alert('Invalid Credentials.');</script>";
-                exit(); // Stop further execution after showing the alert
-            }
-        } else {
-            echo "<script type='text/javascript'>alert('Invalid Credentials.');</script>";
-            $stmt->close(); // Close the statement before exit
-            exit(); // Stop further execution after showing the alert
-        }
+    // Verify the password
+    if (password_verify($password, $stored_hashed_password)) {
+      $_SESSION['username'] = $username;
+      header("Location: dashboard.php");
+      exit();
     } else {
-        echo "<script type='text/javascript'>alert('Invalid Credentials.');</script>";
-        $stmt->close(); // Close the statement before exit
-        exit(); // Stop further execution after showing the alert
+      echo "<p style='color:red;'>Invalid password.</p>";
     }
+  } else {
+    echo "<p style='color:red;'>No user found with that username.</p>";
+  }
+
+  $stmt->close();
 }
 ?>

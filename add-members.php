@@ -43,21 +43,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (is_null($image)) {
         $_SESSION['error'] = "Profile image is required.";
     } else {
-        // Prepare SQL to insert data into the club_members table
-        $stmt = $conn->prepare("INSERT INTO club_members (image, username, password, email, full_name, role, joined_at, club_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssssi", $image, $username, $password, $email, $full_name, $role, $joined_at, $club_id);
-
-        // Execute query and handle success or failure
-        if ($stmt->execute()) {
-            // Set success message in session
-            $_SESSION['success'] = "Member added successfully!";
-        } else {
-            // Set error message in session
-            $_SESSION['error'] = "Error adding member. Please try again.";
-        }
-
-        // Close the statement
+        // Check for duplicate username or email
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM club_members WHERE username = ? OR email = ?");
+        $stmt->bind_param("ss", $username, $email);
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
         $stmt->close();
+
+        if ($count > 0) {
+            $_SESSION['error'] = "Username or email already exists.";
+        } else {
+            // Prepare SQL to insert data into the club_members table
+            $stmt = $conn->prepare("INSERT INTO club_members (image, username, password, email, full_name, role, joined_at, club_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssssssi", $image, $username, $password, $email, $full_name, $role, $joined_at, $club_id);
+
+            // Execute query and handle success or failure
+            if ($stmt->execute()) {
+                // Set success message in session
+                $_SESSION['success'] = "Member added successfully!";
+            } else {
+                // Set error message in session
+                $_SESSION['error'] = "Error adding member. Please try again.";
+            }
+
+            // Close the statement
+            $stmt->close();
+        }
     }
 
     // Redirect back to club members page

@@ -26,6 +26,9 @@ include 'user-info.php';
 $recent_activities = fetch_data("SELECT * FROM activities WHERE username = '$username' ORDER BY date DESC LIMIT 5");
 $total_users = fetch_data("SELECT COUNT(*) as count FROM club_members")[0]['count'];
 $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
+
+// Fetch clubs from the database
+$clubs = fetch_data("SELECT club_id, club_name FROM clubs");
 ?>
 
 <!DOCTYPE html>
@@ -117,6 +120,15 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
                                 <textarea class="form-control" id="eventDescription" rows="3"></textarea>
                             </div>
                             <div class="mb-3">
+                                <label for="clubSelect" class="form-label">Select Club</label>
+                                <select class="form-control" id="clubSelect" required>
+                                    <option value="" disabled selected>Select a club</option>
+                                    <?php foreach ($clubs as $club): ?>
+                                        <option value="<?php echo $club['club_id']; ?>"><?php echo htmlspecialchars($club['club_name']); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
                                 <label for="eventDate" class="form-label">Event Date</label>
                                 <input type="date" class="form-control" id="eventDate" required>
                             </div>
@@ -183,7 +195,8 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
                                     start: event.event_date + 'T' + (event.start_time || '00:00'),
                                     end: event.event_date + 'T' + (event.end_time || '23:59'),
                                     description: event.event_description,
-                                    location: event.location
+                                    location: event.location,
+                                    club_id: event.club_id // Include club_id
                                 };
                             });
                             successCallback(events);
@@ -198,9 +211,10 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
                     $('#eventTitle').val(info.event.title);
                     $('#eventDescription').val(info.event.extendedProps.description);
                     $('#eventDate').val(info.event.startStr.split('T')[0]);
-                    $('#startTime').val(info.event.startStr.split('T')[1] || '00:00');
-                    $('#endTime').val(info.event.endStr.split('T')[1] || '23:59');
+                    $('#startTime').val(moment(info.event.start));
+                    $('#endTime').val(moment(info.event.end));
                     $('#eventLocation').val(info.event.extendedProps.location);
+                    $('#clubSelect').val(info.event.extendedProps.club_id); // Set selected club
                     $('#eventModal').modal('show');
                 },
                 dateClick: function(info) {
@@ -264,6 +278,9 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
                     return;
                 }
 
+                var startTime = $('#startTime').val().trim(); // Should already be in 12-hour format
+                var endTime = $('#endTime').val().trim(); // Should already be in 12-hour format
+
                 $.ajax({
                     url: 'add-events.php',
                     type: 'POST',
@@ -273,9 +290,10 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
                         name: title,
                         description: description,
                         date: date,
-                        start_time: startTime,
-                        end_time: endTime,
-                        location: location
+                        start_time: startTime, // In 12-hour format
+                        end_time: endTime, // In 12-hour format
+                        location: location,
+                        club_id: $('#clubSelect').val()
                     },
                     success: function(response) {
                         $('#eventModal').modal('hide');

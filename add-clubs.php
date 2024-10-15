@@ -23,13 +23,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Image upload
     $club_image = null;
-    if (isset($_FILES['club_image']) && $_FILES['club_image']['error'] == 0) {
-        $club_image = file_get_contents($_FILES['club_image']['tmp_name']);
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+        $club_image = file_get_contents($_FILES['image']['tmp_name']);
         // Optional: Check if the file type is an image
-        $image_type = mime_content_type($_FILES['club_image']['tmp_name']);
+        $image_type = mime_content_type($_FILES['image']['tmp_name']);
         if (strpos($image_type, 'image') === false) {
             $_SESSION['error'] = "Uploaded file is not a valid image.";
-            header("Location: clubs.php");
+            header("Location: club.php");
             exit();
         }
     }

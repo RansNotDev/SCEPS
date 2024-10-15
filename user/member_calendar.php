@@ -110,27 +110,27 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
                             <input type="hidden" id="eventId">
                             <div class="mb-3">
                                 <label for="eventTitle" class="form-label">Event Title</label>
-                                <input type="text" class="form-control" id="eventTitle" required>
+                                <input type="text" class="form-control" id="eventTitle" disabled>
                             </div>
                             <div class="mb-3">
                                 <label for="eventDescription" class="form-label">Event Description</label>
-                                <textarea class="form-control" id="eventDescription" rows="3"></textarea>
+                                <textarea class="form-control" id="eventDescription" rows="3" disabled></textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="eventDate" class="form-label">Event Date</label>
-                                <input type="date" class="form-control" id="eventDate" required>
+                                <input type="date" class="form-control" id="eventDate" disabled>
                             </div>
                             <div class="mb-3">
                                 <label for="startTime" class="form-label">Start Time</label>
-                                <input type="time" class="form-control" id="startTime" required>
+                                <input type="time" class="form-control" id="startTime" disabled>
                             </div>
                             <div class="mb-3">
                                 <label for="endTime" class="form-label">End Time</label>
-                                <input type="time" class="form-control" id="endTime" required>
+                                <input type="time" class="form-control" id="endTime" disabled>
                             </div>
                             <div class="mb-3">
                                 <label for="eventLocation" class="form-label">Location</label>
-                                <input type="text" class="form-control" id="eventLocation">
+                                <input type="text" class="form-control" id="eventLocation" disabled>
                             </div>
                         </form>
                     </div>
@@ -202,14 +202,15 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
                     $('#eventTitle').val(info.event.title);
                     $('#eventDescription').val(info.event.extendedProps.description);
                     $('#eventDate').val(info.event.startStr.split('T')[0]);
-                    $('#startTime').val(info.event.startStr.split('T')[1] || '00:00');
-                    $('#endTime').val(info.event.endStr.split('T')[1] || '23:59');
+                    $('#startTime').val(moment(info.event.start).format('HH:mm'));
+                    $('#endTime').val(moment(info.event.end).format('HH:mm'));
                     $('#eventLocation').val(info.event.extendedProps.location);
+                    $('#clubSelect').val(info.event.extendedProps.club_id); // Set selected club
                     $('#eventModal').modal('show');
                 },
                 dateClick: function(info) {
                     // Disable creating events via dateClick for users
-                    alert('You do not have permission to create events.');
+                    alert('You do not have permission to create events.');  
                 },
             });
 

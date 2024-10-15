@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_clubs'])) {
         // Execute delete query and check for errors
         if ($conn->query($delete_query) === TRUE) {
             header("Location: club.php?page=$page&success=1");
-            exit();
+            exit(); 
         } else {
             echo "Error deleting records: " . $conn->error;
         }

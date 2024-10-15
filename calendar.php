@@ -1,5 +1,4 @@
 <?php
-// Start the session and include necessary files
 session_start();
 include './connections/db.php';
 
@@ -62,8 +61,26 @@ $clubs = fetch_data("SELECT club_id, club_name FROM clubs");
     <style>
         .fc-daygrid-event {
             border: none;
+            border-radius: 4px;
+            padding: 5px;
+            color: white;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .fc-daygrid-event:hover {
+            transform: scale(1.05);
+        }
+
+        /* Style for non-draggable past events */
+        .fc-not-draggable {
+            opacity: 0.5;
+            /* Make past events look faded */
+            pointer-events: none;
+            /* Disable mouse events */
         }
     </style>
+
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -153,6 +170,27 @@ $clubs = fetch_data("SELECT club_id, club_name FROM clubs");
                 </div>
             </div>
         </div>
+
+        <!-- Error Modal -->
+        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="errorMessage"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- jQuery -->
@@ -168,6 +206,19 @@ $clubs = fetch_data("SELECT club_id, club_name FROM clubs");
     <script src="admin/dist/js/adminlte.min.js"></script>
 
     <script>
+        const colors = [
+            '#378CE7',
+            '#67C6E3',
+            '#B6FFFA',
+            '#98ABEE',
+            '#40A2E3',
+            '#7FC7D9',
+            '#B4D4FF',
+            '#86B6F6',
+            '#96EFFF',
+            '#00A9FF'
+        ];
+
         $(function() {
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -196,7 +247,7 @@ $clubs = fetch_data("SELECT club_id, club_name FROM clubs");
                                     end: event.event_date + 'T' + (event.end_time || '23:59'),
                                     description: event.event_description,
                                     location: event.location,
-                                    club_id: event.club_id // Include club_id
+                                    club_id: event.club_id
                                 };
                             });
                             successCallback(events);
@@ -206,18 +257,44 @@ $clubs = fetch_data("SELECT club_id, club_name FROM clubs");
                         }
                     });
                 },
+                eventDidMount: function(info) {
+                    // Select a random color from the cozy color palette
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    info.el.style.backgroundColor = randomColor;
+
+                    var eventDate = new Date(info.event.start);
+                    var today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    // If the event date is in the past, make it non-draggable
+                    if (eventDate < today) {
+                        info.el.classList.add('fc-not-draggable'); // Add a class to style
+                        info.event.setProp('draggable', false); // Disable dragging
+                    }
+                },
                 eventClick: function(info) {
                     $('#eventId').val(info.event.id);
                     $('#eventTitle').val(info.event.title);
                     $('#eventDescription').val(info.event.extendedProps.description);
                     $('#eventDate').val(info.event.startStr.split('T')[0]);
-                    $('#startTime').val(moment(info.event.start));
-                    $('#endTime').val(moment(info.event.end));
+                    $('#startTime').val(moment(info.event.start).format('HH:mm'));
+                    $('#endTime').val(moment(info.event.end).format('HH:mm'));
                     $('#eventLocation').val(info.event.extendedProps.location);
                     $('#clubSelect').val(info.event.extendedProps.club_id); // Set selected club
                     $('#eventModal').modal('show');
                 },
                 dateClick: function(info) {
+                    var selectedDate = new Date(info.dateStr);
+                    var today = new Date();
+                    today.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+
+                    // Check if the selected date is today or in the past
+                    if (selectedDate <= today) {
+                        alert('You cannot add an event on a past date.');
+                        return;
+                    }
+
+                    // If valid date, open modal
                     $('#eventId').val('');
                     $('#eventTitle').val('');
                     $('#eventDescription').val('');
@@ -225,9 +302,21 @@ $clubs = fetch_data("SELECT club_id, club_name FROM clubs");
                     $('#startTime').val('00:00');
                     $('#endTime').val('23:59');
                     $('#eventLocation').val('');
+                    $('#clubSelect').val(''); // Reset club selection
                     $('#eventModal').modal('show');
                 },
                 eventDrop: function(info) {
+                    var droppedDate = info.event.start; // The new start date of the event
+                    var today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    if (info.event.start < today) {
+                        alert('You cannot drop an event on a past date.');
+                        info.revert();
+                        return;
+                    }
+
+                    // Proceed with the AJAX call to update the event
                     $.ajax({
                         url: 'add-events.php',
                         type: 'POST',
@@ -239,10 +328,20 @@ $clubs = fetch_data("SELECT club_id, club_name FROM clubs");
                             date: info.event.startStr.split('T')[0],
                             start_time: info.event.startStr.split('T')[1] || null,
                             end_time: info.event.endStr.split('T')[1] || null,
-                            location: info.event.extendedProps.location
+                            location: info.event.extendedProps.location,
+                            club_id: info.event.extendedProps.club_id
                         },
-                        success: function() {
-                            console.log('Event updated');
+                        success: function(response) {
+                            if (response.startsWith('Error:')) {
+                                $('#errorMessage').text(response);
+                                $('#errorModal').modal('show');
+                            } else {
+                                console.log('Event updated');
+                            }
+                        },
+                        error: function() {
+                            $('#errorMessage').text('Failed to connect to the server');
+                            $('#errorModal').modal('show');
                         }
                     });
                 }
@@ -278,9 +377,6 @@ $clubs = fetch_data("SELECT club_id, club_name FROM clubs");
                     return;
                 }
 
-                var startTime = $('#startTime').val().trim(); // Should already be in 12-hour format
-                var endTime = $('#endTime').val().trim(); // Should already be in 12-hour format
-
                 $.ajax({
                     url: 'add-events.php',
                     type: 'POST',
@@ -290,17 +386,23 @@ $clubs = fetch_data("SELECT club_id, club_name FROM clubs");
                         name: title,
                         description: description,
                         date: date,
-                        start_time: startTime, // In 12-hour format
-                        end_time: endTime, // In 12-hour format
+                        start_time: startTime,
+                        end_time: endTime,
                         location: location,
                         club_id: $('#clubSelect').val()
                     },
                     success: function(response) {
-                        $('#eventModal').modal('hide');
-                        calendar.refetchEvents();
+                        if (response.startsWith('Error:')) {
+                            $('#errorMessage').text(response);
+                            $('#errorModal').modal('show');
+                        } else {
+                            $('#eventModal').modal('hide');
+                            calendar.refetchEvents();
+                        }
                     },
                     error: function() {
-                        alert('Failed to save event');
+                        $('#errorMessage').text('Failed to save event');
+                        $('#errorModal').modal('show');
                     }
                 });
             });
@@ -322,11 +424,13 @@ $clubs = fetch_data("SELECT club_id, club_name FROM clubs");
                                     $('#eventModal').modal('hide');
                                     calendar.refetchEvents();
                                 } else {
-                                    alert('Failed to delete event');
+                                    $('#errorMessage').text(response);
+                                    $('#errorModal').modal('show');
                                 }
                             },
                             error: function() {
-                                alert('Failed to connect to the server');
+                                $('#errorMessage').text('Failed to connect to the server');
+                                $('#errorModal').modal('show');
                             }
                         });
                     }
@@ -334,6 +438,13 @@ $clubs = fetch_data("SELECT club_id, club_name FROM clubs");
                     alert('No event selected for deletion.');
                 }
             });
+        });
+
+        $(document).ready(function() {
+            <?php if (isset($error_message)): ?>
+                $('#errorMessage').text('<?php echo htmlspecialchars($error_message); ?>');
+                $('#errorModal').modal('show');
+            <?php endif; ?>
         });
     </script>
 </body>

@@ -29,7 +29,36 @@ if ($action == 'fetch-calendar') {
     $start_time = $_POST['start_time'] ?? null;
     $end_time = $_POST['end_time'] ?? null;
     $location = $_POST['location'] ?? '';
-    $club_id = $_POST['club_id'] ?? null; // Get the club_id from the POST request
+    $club_id = $_POST['club_id'] ?? null;
+
+    // Check for existing event if it's a new event
+    if (!$id) { // Only check for new events
+        // Check for existing events with the same location and time
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM events WHERE location = ? AND event_date = ? AND ((start_time <= ? AND end_time >= ?) OR (start_time <= ? AND end_time >= ?))");
+        $stmt->bind_param("ssssss", $location, $date, $start_time, $start_time, $end_time, $end_time);
+        $stmt->execute();
+        $stmt->bind_result($locationCount);
+        $stmt->fetch();
+        $stmt->close();
+
+        if ($locationCount > 0) {
+            echo 'Error: An event at the same location overlaps with another event at this time.';
+            exit();
+        }
+
+        // Optional: Check for existing events with the same name, club, time, location, and date
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM events WHERE event_name = ? AND club_id = ? AND event_date = ? AND start_time = ? AND location = ?");
+        $stmt->bind_param("sssss", $name, $club_id, $date, $start_time, $location);
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
+        $stmt->close();
+
+        if ($count > 0) {
+            echo 'Error: An event with the same name, club, time, location, and date already exists.';
+            exit();
+        }
+    }
 
     if ($id) {
         // Update existing event

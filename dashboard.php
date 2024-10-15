@@ -23,7 +23,47 @@ function fetch_data($query)
 
 // Fetch user information
 include 'user-info.php';
-$recent_activities = fetch_data("SELECT * FROM activities WHERE username = '$username' ORDER BY date DESC LIMIT 5");
+// Get the current date
+$current_date = date('Y-m-d'); // Get the current date in 'YYYY-MM-DD' format
+$recent_events_query = "
+    SELECT 
+        events.event_name, 
+        events.event_description, 
+        events.event_date, 
+        events.location, 
+        clubs.club_name, 
+        events.created_by 
+    FROM 
+        events 
+    LEFT JOIN 
+        clubs ON events.club_id = clubs.club_id 
+    WHERE 
+        events.event_date < '$current_date' 
+    ORDER BY 
+        events.event_date DESC 
+    LIMIT 5
+";
+$upcoming_events_query = "
+    SELECT 
+        events.event_name, 
+        events.event_description, 
+        events.event_date, 
+        events.location, 
+        clubs.club_name, 
+        events.created_by 
+    FROM 
+        events 
+    LEFT JOIN 
+        clubs ON events.club_id = clubs.club_id 
+    WHERE 
+        events.event_date >= '$current_date' 
+    ORDER BY 
+        events.event_date ASC 
+    LIMIT 5
+";
+
+$upcoming_events = fetch_data($upcoming_events_query);
+$recent_events = fetch_data($recent_events_query);
 $total_users = fetch_data("SELECT COUNT(*) as count FROM club_members")[0]['count'];
 $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
 $total_events = fetch_data("SELECT COUNT(*) as count FROM events")[0]['count'];
@@ -50,6 +90,30 @@ $total_clubs = fetch_data("SELECT COUNT(*) as count FROM clubs")[0]['count'];
 
     <!-- Chart.js -->
     <script src="admin/plugins/chart.js/Chart.min.js"></script>
+    <style>
+        .event-list {
+            max-height: 300px;
+            /* Adjust the height as needed */
+            overflow-y: auto;
+            /* Enable vertical scrolling */
+        }
+
+        .event-item {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .event-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-item h5 {
+            color: #007bff;
+            /* Bootstrap primary color */
+        }
+    </style>
+
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -117,28 +181,56 @@ $total_clubs = fetch_data("SELECT COUNT(*) as count FROM clubs")[0]['count'];
                 <div class="content">
                     <div class="container-fluid">
                         <div class="row">
-                            <!-- Recent Activities Card -->
-                            <div class="col-lg-6 col-12">
-                                <div class="card">
+                            <div class="col-lg-6 col-12 d-flex">
+                                <div class="card flex-fill">
                                     <div class="card-header">
-                                        <h3 class="card-title">Recent Activities</h3>
+                                        <h3 class="card-title">Recent Events</h3>
                                     </div>
                                     <div class="card-body">
-                                        <ul class="list-unstyled">
-                                            <?php foreach ($recent_activities as $activity): ?>
-                                                <li><?php echo htmlspecialchars($activity['activity']); ?> - <small><?php echo htmlspecialchars($activity['date']); ?></small></li>
-                                            <?php endforeach; ?>
-                                        </ul>
+                                        <div class="event-list" style="max-height: 300px; overflow-y: auto;">
+                                            <ul class="list-unstyled">
+                                                <?php if (empty($recent_events)): ?>
+                                                    <li>No recent events found.</li>
+                                                <?php else: ?>
+                                                    <?php foreach ($recent_events as $event): ?>
+                                                        <li class="event-item mb-3 p-3 border rounded">
+                                                            <h5><?php echo htmlspecialchars($event['event_name']); ?></h5>
+                                                            <p><strong>Description:</strong> <?php echo htmlspecialchars($event['event_description']); ?></p>
+                                                            <p><strong>Date:</strong> <?php echo htmlspecialchars($event['event_date']); ?></p>
+                                                            <p><strong>Location:</strong> <?php echo htmlspecialchars($event['location']); ?></p>
+                                                            <p><strong>Club:</strong> <?php echo htmlspecialchars($event['club_name']); ?></p>
+                                                            <p><strong>Created By:</strong> <?php echo htmlspecialchars($event['created_by']); ?></p>
+                                                        </li>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-6 col-12">
-                                <div class="card">
+
+                            <div class="col-lg-6 col-12 d-flex">
+                                <div class="card flex-fill">
                                     <div class="card-header">
                                         <h3 class="card-title">Upcoming Events</h3>
                                     </div>
                                     <div class="card-body">
-                                        <div id="calendar"></div>
+                                        <ul class="event-list list-unstyled">
+                                            <?php if (empty($upcoming_events)): ?>
+                                                <li>No upcoming events found.</li>
+                                            <?php else: ?>
+                                                <?php foreach ($upcoming_events as $event): ?>
+                                                    <li class="event-item mb-3 p-3 border rounded">
+                                                        <h5><?php echo htmlspecialchars($event['event_name']); ?></h5>
+                                                        <p><strong>Description:</strong> <?php echo htmlspecialchars($event['event_description']); ?></p>
+                                                        <p><strong>Date:</strong> <?php echo htmlspecialchars($event['event_date']); ?></p>
+                                                        <p><strong>Location:</strong> <?php echo htmlspecialchars($event['location']); ?></p>
+                                                        <p><strong>Club:</strong> <?php echo htmlspecialchars($event['club_name']); ?></p>
+                                                        <p><strong>Created By:</strong> <?php echo htmlspecialchars($event['created_by']); ?></p>
+                                                    </li>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>

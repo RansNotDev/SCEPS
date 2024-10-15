@@ -40,11 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_clubs'])) {
 
         // Execute delete query and check for errors
         if ($conn->query($delete_query) === TRUE) {
-            // Deletion was successful, redirect to the same page
             header("Location: club.php?page=$page&success=1");
             exit();
         } else {
-            // Handle deletion error
             echo "Error deleting records: " . $conn->error;
         }
     }
@@ -85,114 +83,141 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_clubs'])) {
                     </div>
                 </div>
             </div>
-            <form method="POST" action="club.php">
-                <!-- Main Content -->
-                <div class="content">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-lg-12 col-12">
-                                <div class="card">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
 
-                                        <h3 class="card-title">List of Clubs</h3>
-                                        <div class="ml-auto">
-                                            <a href="add_clubs.php" class="btn btn-success">Add Club</a>
-                                            <button type="submit" name="delete_clubs" class="btn btn-danger">Delete Selected</button>
-                                        </div>
+            <!-- Main Content -->
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12 col-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h3 class="card-title">List of Clubs</h3>
+                                    <div class="ml-auto">
+                                        <button class="btn btn-success" data-toggle="modal" data-target="#addClubModal">Add Club</button>
+                                        <button type="submit" name="delete_clubs" class="btn btn-danger">Delete Selected</button>
                                     </div>
-                                    <div class="card-body">
-
-                                        <table class="table table-bordered">
-                                            <thead>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <input type="checkbox" id="select-all">
+                                                </th>
+                                                <th>ID</th>
+                                                <th>Club Image</th>
+                                                <th>Club Name</th>
+                                                <th>Description</th>
+                                                <th>Created By</th>
+                                                <th>Created At</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($clubs as $club): ?>
                                                 <tr>
-                                                    <th>
-                                                        <!-- Select all checkbox -->
-                                                        <input type="checkbox" id="select-all">
-                                                    </th>
-                                                    <th>ID</th>
-                                                    <th>Club Image</th>
-                                                    <th>Club Name</th>
-                                                    <th>Description</th>
-                                                    <th>Created By</th>
-                                                    <th>Created At</th>
+                                                    <td>
+                                                        <input type="checkbox" name="club_ids[]" value="<?php echo htmlspecialchars($club['club_id']); ?>">
+                                                    </td>
+                                                    <td><?php echo htmlspecialchars($club['club_id']); ?></td>
+                                                    <td>
+                                                        <?php if (!empty($club['club_image'])): ?>
+                                                            <img src="data:image/jpeg;base64,<?php echo base64_encode($club['club_image']); ?>" alt="Club Image" width="50" height="50">
+                                                        <?php else: ?>
+                                                            <img src="default-club.png" alt="Default Club Image" width="50" height="50">
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td><?php echo htmlspecialchars($club['club_name']); ?></td>
+                                                    <td><?php echo htmlspecialchars($club['description']); ?></td>
+                                                    <td><?php echo htmlspecialchars($club['created_by']); ?></td>
+                                                    <td><?php echo htmlspecialchars($club['created_at']); ?></td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php foreach ($clubs as $club): ?>
-                                                    <tr>
-                                                        <td>
-                                                            <input type="checkbox" name="club_ids[]" value="<?php echo htmlspecialchars($club['club_id']); ?>">
-                                                        </td>
-                                                        <td><?php echo htmlspecialchars($club['club_id']); ?></td>
-                                                        <td>
-                                                            <?php if (!empty($club['club_image'])): ?>
-                                                                <img src="data:image/jpeg;base64,<?php echo base64_encode($club['club_image']); ?>" alt="Club Image" width="50" height="50">
-                                                            <?php else: ?>
-                                                                <img src="default-club.png" alt="Default Club Image" width="50" height="50">
-                                                            <?php endif; ?>
-                                                        </td>
-                                                        <td><?php echo htmlspecialchars($club['club_name']); ?></td>
-                                                        <td><?php echo htmlspecialchars($club['description']); ?></td>
-                                                        <td><?php echo htmlspecialchars($club['created_by']); ?></td>
-                                                        <td><?php echo htmlspecialchars($club['created_at']); ?></td>
-                                                    </tr>
-                                                <?php endforeach; ?>
-                                            </tbody>
-                                        </table>
-                                        <!-- Pagination -->
-                                        <nav aria-label="Page navigation example">
-                                            <ul class="pagination justify-content-center mt-4">
-                                                <!-- Previous button -->
-                                                <li class="page-item <?php if ($page <= 1) {
-                                                                            echo 'disabled';
-                                                                        } ?>">
-                                                    <a class="page-link" href="club.php?page=<?php echo $page - 1; ?>" tabindex="-1">Previous</a>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                    <!-- Pagination -->
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination justify-content-center mt-4">
+                                            <li class="page-item <?php if ($page <= 1) echo 'disabled'; ?>">
+                                                <a class="page-link" href="club.php?page=<?php echo $page - 1; ?>" tabindex="-1">Previous</a>
+                                            </li>
+                                            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                                <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                                                    <a class="page-link" href="club.php?page=<?php echo $i; ?>"><?php echo $i; ?></a>
                                                 </li>
-
-                                                <!-- Page numbers -->
-                                                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                                                    <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
-                                                        <a class="page-link" href="club.php?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                                                    </li>
-                                                <?php endfor; ?>
-
-                                                <!-- Next button -->
-                                                <li class="page-item <?php if ($page >= $total_pages) {
-                                                                            echo 'disabled';
-                                                                        } ?>">
-                                                    <a class="page-link" href="club.php?page=<?php echo $page + 1; ?>">Next</a>
-                                                </li>
-                                            </ul>
-                                        </nav>
-
-                                    </div>
+                                            <?php endfor; ?>
+                                            <li class="page-item <?php if ($page >= $total_pages) echo 'disabled'; ?>">
+                                                <a class="page-link" href="club.php?page=<?php echo $page + 1; ?>">Next</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
                                 </div>
                             </div>
                         </div>
-            </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Adding Club -->
+            <div class="modal fade" id="addClubModal" tabindex="-1" role="dialog" aria-labelledby="addClubModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addClubModalLabel">Add Club</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form method="POST" action="add-clubs.php" enctype="multipart/form-data">
+                            <div class="modal-body">
+                                <label style="display: flex; justify-content: center; align-items: center; flex-direction: column;">Club Image</label><br>
+                                <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                                    <img id="imagePreview" src="admin/dist/img/default-featured-image.jpg" alt="Image Preview"
+                                        style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; cursor: pointer;"
+                                        onclick="document.getElementById('club_image').click();">
+                                    <input type="file" id="club_image" name="club_image" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="club_name">Club Name</label>
+                                    <input type="text" class="form-control" id="club_name" name="club_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <textarea class="form-control" id="description" name="description" required></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Add Club</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="control-sidebar control-sidebar-dark"></aside>
         </div>
-    </div>
 
-    <aside class="control-sidebar control-sidebar-dark">
-    </aside>
-    </div>
+        <!-- jQuery -->
+        <script src="admin/plugins/jquery/jquery.min.js"></script>
+        <!-- Bootstrap 4 -->
+        <script src="admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <!-- AdminLTE App -->
+        <script src="admin/dist/js/adminlte.min.js"></script>
 
-    <!-- jQuery -->
-    <script src="admin/plugins/jquery/jquery.min.js"></script>
-    <!-- Bootstrap 4 -->
-    <script src="admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- AdminLTE App -->
-    <script src="admin/dist/js/adminlte.min.js"></script>
-
-    <!-- Select all checkboxes script -->
-    <script>
-        document.getElementById('select-all').addEventListener('click', function(event) {
-            let checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = event.target.checked;
-            });
-        });
-    </script>
+        <!-- Select all checkboxes script -->
+        <script>
+            function previewImage(event) {
+                const imagePreview = document.getElementById('imagePreview');
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+        </script>
 </body>
 
 </html>

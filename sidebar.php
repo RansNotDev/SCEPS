@@ -155,13 +155,7 @@
             <p>Home</p>
           </a>
         </li>
-        <li class="nav-item">
-          <a href="contents/profile.php" class="nav-link">
-            <i class="nav-icon fas fa-user"></i>
-            <p>Profile</p>
-          </a>
-        </li>
-        
+
         <!-- club dropdown -->
         <li class="nav-item">
           <a href="#" class="nav-link">
@@ -190,8 +184,7 @@
           <a href="calendar.php" class="nav-link">
             <i class="nav-icon fas fa-calendar-alt"></i>
             <p>
-              Calendar
-              <span class="badge badge-info right">2</span>
+              calendar
             </p>
           </a>
         </li>

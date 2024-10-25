@@ -184,7 +184,7 @@
           <a href="calendar.php" class="nav-link">
             <i class="nav-icon fas fa-calendar-alt"></i>
             <p>
-              calendar
+              Calendar
             </p>
           </a>
         </li>

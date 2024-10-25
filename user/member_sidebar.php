@@ -64,8 +64,8 @@
 
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
   <!-- Brand Logo -->
-  <a href="dashboard.php" class="brand-link">
-    <img src="../admin/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+  <a href="#" class="brand-link">
+    <img src="<?php echo $club_image_src; ?>" alt="Club Image" class="brand-image img-circle">
     <span class="brand-text font-weight-light"><?php echo $club_name; ?></span>
   </a>
   <!-- Sidebar -->
@@ -101,7 +101,6 @@
             <i class="nav-icon fas fa-calendar-alt"></i>
             <p>
               Calendar
-              <span class="badge badge-info right">2</span>
             </p>
           </a>
         </li>

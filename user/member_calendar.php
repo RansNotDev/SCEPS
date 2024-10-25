@@ -22,7 +22,7 @@ function fetch_data($query)
 }
 
 // Fetch user information
-include '../user-info.php';
+include 'user-info.php';
 $recent_activities = fetch_data("SELECT * FROM activities WHERE username = '$username' ORDER BY date DESC LIMIT 5");
 $total_users = fetch_data("SELECT COUNT(*) as count FROM club_members")[0]['count'];
 $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];

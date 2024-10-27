@@ -21,13 +21,10 @@ function fetch_data($query)
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }
 
-// Fetch user information and get the user's club ID
-include 'user-info.php'; // This should set $club_id
-
+// Fetch user information
+include 'user-info.php';
 // Get the current date
-$current_date = date('Y-m-d');
-
-// Modify the SQL queries to include the user's club ID
+$current_date = date('Y-m-d'); // Get the current date in 'YYYY-MM-DD' format
 $recent_events_query = "
     SELECT 
         events.event_name, 
@@ -41,13 +38,11 @@ $recent_events_query = "
     LEFT JOIN 
         clubs ON events.club_id = clubs.club_id 
     WHERE 
-        events.event_date < '$current_date' 
-        AND events.club_id = '$club_id' 
+        events.event_date < '$current_date' AND events.club_id = $club_id
     ORDER BY 
         events.event_date DESC 
     LIMIT 5
 ";
-
 $upcoming_events_query = "
     SELECT 
         events.event_name, 
@@ -61,21 +56,18 @@ $upcoming_events_query = "
     LEFT JOIN 
         clubs ON events.club_id = clubs.club_id 
     WHERE 
-        events.event_date >= '$current_date' 
-        AND events.club_id = '$club_id' 
+        events.event_date >= '$current_date' AND events.club_id = $club_id
     ORDER BY 
         events.event_date ASC 
     LIMIT 5
 ";
 
-// Fetch events based on the user's club designation
 $upcoming_events = fetch_data($upcoming_events_query);
 $recent_events = fetch_data($recent_events_query);
-
-// Fetch statistics
-$total_members = fetch_data("SELECT COUNT(*) as count FROM club_members WHERE club_id = '$club_id'")[0]['count'];
-$total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id = '$club_id'")[0]['count'];
+$total_users = fetch_data("SELECT COUNT(*) as count FROM club_members WHERE club_id = $club_id")[0]['count'];
+$total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id = $club_id")[0]['count'];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -87,14 +79,21 @@ $total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id =
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <link rel="stylesheet" href="../admin/plugins/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" href="../admin/dist/css/adminlte.min.css">
-    <script src="../admin/plugins/chart.js/Chart.min.js"></script>
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../admin/plugins/fontawesome-free/css/all.min.css">
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../admin/dist/css/adminlte.min.css">
+
+    <!-- Chart.js -->
+    <script src="../admin/plugins/chart.js/Chart.min.js"></script>
     <style>
         .event-list {
             max-height: 300px;
+            /* Adjust the height as needed */
             overflow-y: auto;
+            /* Enable vertical scrolling */
         }
 
         .event-item {
@@ -109,14 +108,17 @@ $total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id =
 
         .event-item h5 {
             color: #007bff;
+            /* Bootstrap primary color */
         }
     </style>
+
 </head>
 
 <body class="hold-transition sidebar-mini">
-    <?php include 'member_sidebar.php'; ?>
+    <?php include 'leader_sidebar.php' ?>
 
     <div class="content-wrapper" style="max-height: 600px; overflow-y: auto;">
+        <!-- Content Header -->
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
@@ -124,11 +126,12 @@ $total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id =
                         <h1 class="m-0">Dashboard</h1>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-lg-2 col-6">
                         <div class="small-box bg-info">
                             <div class="inner">
-                                <h3><?php echo htmlspecialchars($total_members); ?></h3>
+                                <h3><?php echo htmlspecialchars($total_users); ?></h3>
                                 <p>Total Members</p>
                             </div>
                             <div class="icon">
@@ -149,6 +152,7 @@ $total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id =
                     </div>
                 </div>
 
+                <!-- Main Content -->
                 <div class="content">
                     <div class="container-fluid">
                         <div class="row">
@@ -158,7 +162,7 @@ $total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id =
                                         <h3 class="card-title">Recent Events</h3>
                                     </div>
                                     <div class="card-body">
-                                        <div class="event-list">
+                                        <div class="event-list" style="max-height: 300px; overflow-y: auto;">
                                             <ul class="list-unstyled">
                                                 <?php if (empty($recent_events)): ?>
                                                     <li>No recent events found.</li>
@@ -207,6 +211,7 @@ $total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id =
                             </div>
                         </div>
 
+                        <!-- Statistics Bar Graph -->
                         <div class="row">
                             <div class="col-lg-12 col-12">
                                 <div class="card">
@@ -228,6 +233,7 @@ $total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id =
         </div>
     </div>
 
+
     <!-- jQuery -->
     <script src="../admin/plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
@@ -244,21 +250,21 @@ $total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id =
                     labels: ['Members', 'Events'],
                     datasets: [{
                         label: 'Total Count',
-                        data: [<?php echo htmlspecialchars($total_members); ?>, <?php echo htmlspecialchars($total_events); ?>],
+                        data: [<?php echo htmlspecialchars($total_users); ?>, <?php echo htmlspecialchars($total_events); ?>],
                         backgroundColor: [
                             'rgba(54, 162, 235, 0.6)',
-                            'rgba(255, 99, 132, 0.6)'
+                            'rgba(255, 99, 132, 0.6)',
                         ],
                         borderColor: [
                             'rgba(54, 162, 235, 1)',
-                            'rgba(255, 99, 132, 1)'
+                            'rgba(255, 99, 132, 1)',
                         ],
                         borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: false, // Adjust this to avoid stretched labels
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -271,6 +277,10 @@ $total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id =
                             title: {
                                 display: true,
                                 text: 'Categories'
+                            },
+                            ticks: {
+                                autoSkip: true, // Automatically skip labels if necessary
+                                maxTicksLimit: 5 // Limit the number of ticks to avoid overcrowding
                             }
                         }
                     },
@@ -278,12 +288,21 @@ $total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id =
                         legend: {
                             display: true,
                             position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.dataset.label + ': ' + tooltipItem.raw; // Custom tooltip label
+                                }
+                            }
                         }
                     }
                 }
             });
         });
     </script>
+
+    </div>
 </body>
 
 </html>

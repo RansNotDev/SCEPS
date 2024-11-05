@@ -27,19 +27,24 @@
         <p class="login-box-msg">Sign in to start your session</p>
 
         <form action="index.php" method="post">
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" name="username" placeholder="Username">
-            <div class="input-group-append">
-              <div class="input-group-text">
-                <span class="fas fa-user"></span>
+        <div class="input-group mb-3">
+    <input type="text" class="form-control" name="username" placeholder="Username"
+          title="Username must be up to 10 characters with no spaces."
+          minlength="6" maxlength="10" required>
+    <div class="input-group-append">
+      <div class="input-group-text">
+        <span class="fas fa-user"></span>
               </div>
             </div>
           </div>
           <div class="input-group mb-3">
-            <input type="password" class="form-control" name="password" placeholder="Password">
-            <div class="input-group-append">
-              <div class="input-group-text">
-                <span class="fas fa-lock"></span>
+          <input type="password" class="form-control" name="password" placeholder="Password"
+        pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\S{6,20}$"
+          title="Password must be 6-20 characters, contain at least one digit, one uppercase, and one lowercase letter, with no spaces."
+          minlength="6" maxlength="20" required>
+    <div class="input-group-append">
+    <div class="input-group-text">
+    <span class="fas fa-lock"></span>
               </div>
             </div>
           </div>
@@ -60,10 +65,6 @@
           </div>
         </form>
         <br><br>
-
-        <p class="mb-1">
-          <a href="forgot-password.php">I forgot my password</a>
-        </p>
       </div>
       <!-- /.login-card-body -->
     </div>

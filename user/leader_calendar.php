@@ -439,5 +439,4 @@ $clubs = fetch_data("SELECT club_id, club_name FROM clubs");
         });
     </script>
 </body>
-
 </html>

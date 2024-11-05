@@ -58,6 +58,30 @@ if ($action == 'fetch-calendar') {
             echo 'Error: An event with the same name, club, time, location, and date already exists.';
             exit();
         }
+
+        // Check if there are already 10 events scheduled for this location on this date
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM events WHERE location = ? AND event_date = ?");
+        $stmt->bind_param("ss", $location, $date);
+        $stmt->execute();
+        $stmt->bind_result($eventCount);
+        $stmt->fetch();
+        $stmt->close();
+
+        if ($eventCount >= 10) {
+            echo 'Error: The maximum number of events (10) for this location on this date has been reached.';
+            exit();
+        }
+    }
+
+    // Minimum duration check for new and updated events
+    $startTimeObj = new DateTime($start_time);
+    $endTimeObj = new DateTime($end_time);
+    $timeDifference = $startTimeObj->diff($endTimeObj);
+
+    // Ensure the duration is at least 2 hours
+    if ($timeDifference->h < 2 && $timeDifference->days == 0) {
+        echo 'Error: Event duration must be at least 2 hours.';
+        exit();
     }
 
     if ($id) {

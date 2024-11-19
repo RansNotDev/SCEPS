@@ -75,8 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <link rel="stylesheet" href="../admin/plugins/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" href="../admin/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="../devnull_access/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../devnull_access/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 
@@ -120,11 +120,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- jQuery -->
-    <script src="../admin/plugins/jquery/jquery.min.js"></script>
+    <script src="../devnull_access/plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
-    <script src="../admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../devnull_access/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
-    <script src="../admin/dist/js/adminlte.min.js"></script>
+    <script src="../devnull_access/dist/js/adminlte.min.js"></script>
     <script>
         // Disable form submissions if there are invalid fields
         (function() {

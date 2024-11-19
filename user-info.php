@@ -3,7 +3,7 @@
 $user_info = fetch_data("SELECT image, full_name, role FROM club_members WHERE username = '$username'");
 
 // Initialize variables for display
-$image_src = 'admin/dist/img/default.jpg'; // Default image path
+$image_src = 'devnull_access/dist/img/default.jpg'; // Default image path
 $full_name = 'Guest'; // Default name if no user info
 
 if (!empty($user_info)) {

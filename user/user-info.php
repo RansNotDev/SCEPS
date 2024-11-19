@@ -3,10 +3,10 @@
 $user_info = fetch_data("SELECT image, full_name, role, club_id FROM club_members WHERE username = '$username'");
 
 // Initialize variables for display
-$image_src = 'admin/dist/img/default.jpg'; // Default user image path
+$image_src = 'devnull_access/dist/img/default.jpg'; // Default user image path
 $full_name = 'Guest'; // Default name if no user info
 $club_name = ''; // Initialize club name
-$club_image_src = 'admin/dist/img/default_club.jpg'; // Default club image path
+$club_image_src = 'devnull_access/dist/img/default_club.jpg'; // Default club image path
 
 if (!empty($user_info)) {
     // Fetch the first user's information

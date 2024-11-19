@@ -87,9 +87,9 @@ $total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id =
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <link rel="stylesheet" href="../admin/plugins/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" href="../admin/dist/css/adminlte.min.css">
-    <script src="../admin/plugins/chart.js/Chart.min.js"></script>
+    <link rel="stylesheet" href="../devnull_access/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../devnull_access/dist/css/adminlte.min.css">
+    <script src="../devnull_access/plugins/chart.js/Chart.min.js"></script>
 
     <style>
         .event-list {
@@ -229,11 +229,11 @@ $total_events = fetch_data("SELECT COUNT(*) as count FROM events WHERE club_id =
     </div>
 
     <!-- jQuery -->
-    <script src="../admin/plugins/jquery/jquery.min.js"></script>
+    <script src="../devnull_access/plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
-    <script src="../admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../devnull_access/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
-    <script src="../admin/dist/js/adminlte.min.js"></script>
+    <script src="../devnull_access/dist/js/adminlte.min.js"></script>
     <!-- Chart.js Script for Bar Graph -->
     <script>
         $(function() {

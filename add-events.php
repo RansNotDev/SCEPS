@@ -79,8 +79,8 @@ if ($action == 'fetch-calendar') {
     $timeDifference = $startTimeObj->diff($endTimeObj);
 
     // Ensure the duration is at least 2 hours
-    if ($timeDifference->h < 2 && $timeDifference->days == 0) {
-        echo 'Error: Event duration must be at least 2 hours.';
+    if ($timeDifference->h < 1 && $timeDifference->days == 0) {
+        echo 'Error: Event duration must be at least 1 hours.';
         exit();
     }
 

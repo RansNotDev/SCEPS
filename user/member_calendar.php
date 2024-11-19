@@ -40,16 +40,16 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="../admin/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../devnull_access/plugins/fontawesome-free/css/all.min.css">
 
     <!-- icheck bootstrap -->
-    <link rel="stylesheet" href="../admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <link rel="stylesheet" href="../devnull_access/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
 
     <!-- Theme style -->
-    <link rel="stylesheet" href="../admin/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="../devnull_access/dist/css/adminlte.min.css">
 
     <!-- fullCalendar -->
-    <link rel="stylesheet" href="../admin/plugins/fullcalendar/main.css">
+    <link rel="stylesheet" href="../devnull_access/plugins/fullcalendar/main.css">
 
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -148,16 +148,16 @@ $total_posts = fetch_data("SELECT COUNT(*) as count FROM posts")[0]['count'];
     </div>
 
     <!-- jQuery -->
-    <script src="../admin/plugins/jquery/jquery.min.js"></script>
+    <script src="../devnull_access/plugins/jquery/jquery.min.js"></script>
     <!-- jQuery UI -->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <!-- Bootstrap 4 -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <!-- FullCalendar -->
-    <script src="../admin/plugins/moment/moment.min.js"></script>
-    <script src="../admin/plugins/fullcalendar/main.js"></script>
+    <script src="../devnull_access/plugins/moment/moment.min.js"></script>
+    <script src="../devnull_access/plugins/fullcalendar/main.js"></script>
     <!-- AdminLTE App -->
-    <script src="../admin/dist/js/adminlte.min.js"></script>
+    <script src="../devnull_access/dist/js/adminlte.min.js"></script>
 
     <script>
         $(function() {

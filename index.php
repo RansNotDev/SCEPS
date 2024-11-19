@@ -9,11 +9,11 @@
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="./admin/plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="./devnull_access/plugins/fontawesome-free/css/all.min.css">
   <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="./admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <link rel="stylesheet" href="./devnull_access/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="./admin/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="./devnull_access/dist/css/adminlte.min.css">
 </head>
 
 <body class="hold-transition login-page">
@@ -29,8 +29,8 @@
         <form action="index.php" method="post">
         <div class="input-group mb-3">
     <input type="text" class="form-control" name="username" placeholder="Username"
-          title="Username must be up to 10 characters with no spaces."
-          minlength="6" maxlength="10" required>
+          title="Username must be up to 12 characters with no Whitespaces."
+          minlength="6" maxlength="12" required> <!-- It only accepts Username that having 12 characters with no Whitespaces.-->
     <div class="input-group-append">
       <div class="input-group-text">
         <span class="fas fa-user"></span>
@@ -38,10 +38,10 @@
             </div>
           </div>
           <div class="input-group mb-3">
-          <input type="password" class="form-control" name="password" placeholder="Password"
+          <input type="password" class="form-control" name="password" placeholder="Password" 
         pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\S{6,20}$"
-          title="Password must be 6-20 characters, contain at least one digit, one uppercase, and one lowercase letter, with no spaces."
-          minlength="6" maxlength="20" required>
+          title="Password must be 6-20 characters, contain number, uppercase, and lowercase letter, with no Whitespaces."
+          minlength="6" maxlength="20" required> <!-- It only accepts password that having least one digit, one uppercase, and one lowercase letter, with no Whitespaces-->
     <div class="input-group-append">
     <div class="input-group-text">
     <span class="fas fa-lock"></span>

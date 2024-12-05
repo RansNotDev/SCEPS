@@ -1,5 +1,4 @@
 <?php
-// Start the session and include necessary files
 session_start();
 include './connections/db.php';
 
